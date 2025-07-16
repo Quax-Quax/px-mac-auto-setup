@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Homebrew自動インストールスクリプト（curl実行最適化版）
-# 使用方法: curl -sSL https://raw.githubusercontent.com/username/repo/main/homebrew_installer.sh | bash
+# 使用方法: curl -sSL https://raw.githubusercontent.com/Quax-Quax/px-mac-auto-setup/refs/heads/master/px-install-mac.sh | bash
 # Claude Sonnet 4 を用いて作成しました
 # Author: Quax-Quax
 
