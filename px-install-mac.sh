@@ -170,7 +170,7 @@ echo "   ソース: mainブランチ（OSX_makefile2を含む最新版）"
 
 # PerpleXディレクトリの作成と移動
 print_status "PerpleXディレクトリを作成しています..."
-mkdir -p "$PERPLEX_DIR/bin_backup"
+mkdir -p "$PERPLEX_DIR"
 cd "$PERPLEX_DIR"
 
 # GitHubからPerpleXをクローン（mainブランチ）
@@ -182,7 +182,7 @@ if [[ -d ".git" ]]; then
         print_warning "git pullに失敗しました。リポジトリを再クローンします..."
         cd "$HOME"
         rm -rf "$PERPLEX_DIR"
-        mkdir -p "$PERPLEX_DIR/bin_backup"
+        mkdir -p "$PERPLEX_DIR"
         cd "$PERPLEX_DIR"
         git clone https://github.com/jadconnolly/Perple_X.git .
     }
@@ -225,7 +225,7 @@ EXECUTABLES="actcor convex fluids MC_fit pspts pstable pt2curv werami build ctra
 # 実行ファイルの存在確認とコピー
 COPIED_FILES=()
 MISSING_FILES=()
-
+mkdir -p "$PERPLEX_DIR/bin_backup"
 for exe in $EXECUTABLES; do
     if [[ -f "$exe" ]]; then
         cp "$exe" "$PERPLEX_DIR/bin_backup/"
