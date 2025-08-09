@@ -31,11 +31,7 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
-# --- Main Logic ---
-main() {
-    # --- 1. Homebrew and gfortran Setup ---
-    print_status "Setting up Homebrew and gfortran..."
-
+gfortran_setup() {
     # Install Homebrew if not present
     if ! command -v brew &>/dev/null; then
         print_status "Installing Homebrew..."
@@ -73,6 +69,19 @@ main() {
         exit 1
     fi
 
+}
+
+# --- Main Logic ---
+main() {
+
+    if ! command -v gfortran &>/dev/null; then
+        print_error "gfortran command not found."
+        # --- 1. Homebrew and gfortran Setup ---
+        print_status "Setting up Homebrew and gfortran..."
+        gfortran_setup
+    else
+        print_success "gfortran is already installed."
+    fi
     # --- 2. Perple_X Setup and Build ---
     print_status "Setting up and building Perple_X v7.1.13..."
 
