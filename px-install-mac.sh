@@ -10,6 +10,10 @@
 # e.g., ./px-install-mac.sh v7.1.13
 #       ./px-install-mac.sh head
 #
+# When you get a 'permission denied' error,
+# 1.  grant it execute permissions, or
+# 2.  use 'bash ./px-install-mac-v3.sh [version|head]'   
+#
 # Author: Quax-Quax & Coding Partner
 
 set -euo pipefail # Fail on error, unset var, or pipe failure.
@@ -144,12 +148,15 @@ main() {
     check_buildability "$version"
 
     # --- 2. Homebrew and gfortran Setup ---
+    local gfortran_flag
     if ! command -v gfortran &>/dev/null; then
         print_error "gfortran command not found."
         print_status "Setting up Homebrew and gfortran..."
         gfortran_setup
+        gfortran_flag="1"
     else
         print_success "gfortran is already installed."
+        gfortran_flag="0"
     fi
 
     # --- 3. Perple_X Setup and Build ---
@@ -239,10 +246,12 @@ main() {
     echo "Installation Directory: $perplex_dir"
     echo "Executables:          $perplex_dir/bin/"
     echo ""
-    echo "🔧 Next Steps:"
-    echo "1. Open a new terminal window, or"
-    echo "2. Run 'source ~/.zshrc' in your current terminal."
-    echo ""
+    if [[gfortran_flag == "1"]]; then
+        echo "🔧 Next Steps:"
+        echo "1. Open a new terminal window, or"
+        echo "2. Run 'source ~/.zshrc' in your current terminal."
+        echo ""
+    fi
     echo "🧪 To run Perple_X:"
     echo "   cd $perplex_dir"
     echo "   ./bin/werami"
