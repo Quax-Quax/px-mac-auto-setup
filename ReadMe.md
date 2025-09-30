@@ -7,7 +7,7 @@ curl -sSL https://raw.githubusercontent.com/Quax-Quax/px-mac-auto-setup/refs/hea
 ```
 versionには、`vX.XX.XX`（vから始まるバージョン番号）ないし`head`を指定してください。
   
-ビルドに使用するMakeFile（OSX_makefile2）は、2025年にマージされました。そのため、v7.1.12以前のものをビルドすることはできません。その場合は手動でソースをDLし、OSX_makefile2を移植し、OSX_makefileを参考に適宜修正すれば動くのではないかと思います。  
+ビルドに使用するMakeFile（OSX_makefile2）は、2025年にマージされました。そのため、このスクリプトでv7.1.12以前のものをビルドすることはできません。古いバージョンが必要な場合は、OSX_makefile2を移植し、スクリプトを参考に手動でビルドしてください。  
 参考：https://github.com/jadconnolly/Perple_X/  
   
 Claude Sonnet 4, Gemini 2.5 Pro Coding Partner を用いて作成しました。  

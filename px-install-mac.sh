@@ -4,6 +4,7 @@
 #
 # This script automates the installation of Homebrew, gfortran,
 # and the compilation of a specified version of Perple_X.
+# https://github.com/jadconnolly/Perple_X/
 #
 # Usage:
 # ./px-install-mac.sh [version|head]
@@ -244,7 +245,8 @@ main() {
     echo "🎉 Perple_X ($version) Setup Complete! 🎉"
     echo "=================================================="
     echo "Installation Directory: $perplex_dir"
-    echo "Executables:          $perplex_dir/bin/"
+    echo "Executables:            $perplex_dir/bin/"
+    echo "Backup executables:     $perplex_dir/bin_backup/"
     echo ""
     if [[gfortran_flag == "1"]]; then
         echo "🔧 Next Steps:"
