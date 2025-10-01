@@ -18,6 +18,7 @@
 # Author: Quax-Quax & Coding Partner
 
 set -euo pipefail # Fail on error, unset var, or pipe failure.
+local tmp_dir # Define parameter to smooth cleanup
 
 # --- Helper Functions for Logging ---
 print_status() { echo -e "\n🔄 $1"; }
@@ -164,7 +165,6 @@ main() {
     print_status "Setting up and building Perple_X ($version)..."
 
     # Create a temporary directory for download and cleanup on exit
-    local tmp_dir
     tmp_dir=$(mktemp -d)
     trap 'rm -rf -- "$tmp_dir"' EXIT
 
@@ -248,7 +248,7 @@ main() {
     echo "Executables:            $perplex_dir/bin/"
     echo "Backup executables:     $perplex_dir/bin_backup/"
     echo ""
-    if [[gfortran_flag == "1"]]; then
+    if [[ "$gfortran_flag" = "1" ]]; then
         echo "🔧 Next Steps:"
         echo "1. Open a new terminal window, or"
         echo "2. Run 'source ~/.zshrc' in your current terminal."
