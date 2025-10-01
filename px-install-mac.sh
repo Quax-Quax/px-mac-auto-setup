@@ -225,7 +225,7 @@ main() {
 
     # --- 4. Copy Executables ---
     print_status "Copying executables..."
-    local executables="actcor convex fluids MC_fit pspts pstable pt2curv werami build ctransf frendly meemum pssect psvdraw vertex"
+    local executables=(actcor convex fluids MC_fit pspts pstable pt2curv werami build ctransf frendly meemum pssect psvdraw vertex)
     
     mkdir -p "$perplex_dir/bin" "$perplex_dir/bin_backup"
 
@@ -238,7 +238,7 @@ main() {
     done
     print_success "Executables copied to $perplex_dir/bin/"
     cp -r "$perplex_dir/bin/"* "$perplex_dir/bin_backup/"
-    print_success "Excutables backuped to $perplex_dir/bin_backup/"
+    print_success "Executables backuped to $perplex_dir/bin_backup/"
 
     # --- 5. Final Instructions ---
     echo -e "\n=================================================="
