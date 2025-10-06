@@ -19,6 +19,8 @@
 
 set -euo pipefail # Fail on error, unset var, or pipe failure.
 local tmp_dir # Define parameter to smooth cleanup
+local scr_name=$0
+
 
 # --- Helper Functions for Logging ---
 print_status() { echo -e "\n🔄 $1"; }
@@ -27,11 +29,11 @@ print_error() { echo "❌ $1" >&2; }
 
 # --- Usage Function ---
 usage() {
-    echo "Usage: $0 [version|head]"
+    echo "Usage: $scr_name [version|head]"
     echo "  version: A valid Perple_X release tag (e.g., v7.1.13)."
     echo "  head:    Install the latest version from the main branch."
     echo
-    echo "Example: $0 v7.1.13"
+    echo "Example: $scr_name v7.1.13"
 }
 
 # --- Version Check Functions ---
