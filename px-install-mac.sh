@@ -227,12 +227,12 @@ main() {
 
     # --- 4. Copy Executables ---
     print_status "Copying executables..."
-    local executables=(actcor convex fluids MC_fit pspts pstable pt2curv werami build ctransf frendly meemum pssect psvdraw vertex)
+    local executables="actcor convex fluids MC_fit pspts pstable pt2curv werami build ctransf frendly meemum pssect psvdraw vertex"
     
     mkdir -p "$perplex_dir/bin" "$perplex_dir/bin_backup"
 
     for exe in $executables; do
-        if [[ -f "$exe" ]]; then
+        if [ -f "$exe" ]; then
             cp "$exe" "$perplex_dir/bin/"
         else
             echo "⚠️  Warning: Executable '$exe' not found after build."
