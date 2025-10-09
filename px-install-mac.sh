@@ -18,8 +18,8 @@
 # Author: Quax-Quax & Coding Partner
 
 set -euo pipefail # Fail on error, unset var, or pipe failure.
-local tmp_dir # Define parameter to smooth cleanup
-local scr_name=$0
+tmp_dir="" # Define parameter to smooth cleanup
+scr_name=$0
 
 
 # --- Helper Functions for Logging ---
