@@ -1,6 +1,6 @@
 # ReadMe
 Perple_Xのインストール用スクリプトです。簡易的なバージョンマネージャーの機能も持たせています。必要に応じてHomebrew経由でgfortranを導入します。  
-手持ちの端末（MacBook Air 2020, M1）で動作することを確認しています。
+手持ちの端末（MacBook Air 2020 M1, Mac Mini 2024 M4）で動作することを確認しています。
 ## 使用方法
 ```sh
 curl -sSL https://raw.githubusercontent.com/Quax-Quax/px-mac-auto-setup/refs/heads/master/px-install-mac.sh | bash -s version
