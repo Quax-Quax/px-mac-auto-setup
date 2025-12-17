@@ -86,6 +86,44 @@ check_buildability() {
     fi
 }
 
+# Checks if a binary is provided (v7.1.15 or newer returns 0)
+check_if_binary_provided() {
+    local version_to_check="$1"
+    if [[ "$version_to_check" == "head" ]]; then
+        return 1  # head はビルド前提
+    fi
+    local ref="v7.1.15"
+    # version >= v7.1.15 ならバイナリあり
+    if [[ "$(printf '%s\n%s\n' "$ref" "$version_to_check" | sort -V | head -n1)" == "$ref" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+download_binary_release() {
+    local version="$1"
+    local perplex_dir="$2"
+
+    local download_url="https://github.com/jadconnolly/Perple_X/releases/download/$version/Perple_X_${version}_macOS_64_gfortran.tar.gz"
+
+    print_status "Downloading binary from $download_url ..."
+    mkdir -p "$perplex_dir"
+    tmp_dir=$(mktemp -d)
+    trap 'rm -rf -- "$tmp_dir"' EXIT
+
+    if ! curl -fL "$download_url" -o "$tmp_dir/perplex_bin.tar.gz"; then
+        print_error "バイナリのダウンロードに失敗しました。URL とバージョンを確認してください。"
+        exit 1
+    fi
+
+    print_status "Extracting binary to $perplex_dir ..."
+    if ! tar -xzf "$tmp_dir/perplex_bin.tar.gz" -C "$perplex_dir" --strip-components=1; then
+        print_error "バイナリの展開に失敗しました。"
+        exit 1
+    fi
+    print_success "バイナリ展開が完了しました: $perplex_dir"
+}
 
 # --- gfortran Setup ---
 gfortran_setup() {
@@ -150,41 +188,55 @@ main() {
     # --- 1. Version Validation ---
     validate_version "$version"
     check_buildability "$version"
-
-    # --- 2. Homebrew and gfortran Setup ---
-    local gfortran_flag
-    if ! command -v gfortran &>/dev/null; then
-        print_error "gfortran command not found."
-        print_status "Setting up Homebrew and gfortran..."
-        gfortran_setup
-        gfortran_flag="1"
+    if check_if_binary_provided "$version"; then
+        binary_available=1
     else
-        print_success "gfortran is already installed."
-        gfortran_flag="0"
+        binary_available=0
     fi
 
-    # --- 3. Perple_X Setup and Build ---
-    print_status "Setting up and building Perple_X ($version)..."
+    # --- 2. Homebrew and gfortran Setup ---
+    if [[ "$binary_available" -eq 0 ]]; then
+        if ! command -v gfortran &>/dev/null; then
+            print_error "gfortran command not found."
+            print_status "Setting up Homebrew and gfortran..."
+            gfortran_setup
+            gfortran_flag="1"
+        else
+            print_success "gfortran is already installed."
+            gfortran_flag="0"
+        fi
+    else
+        gfortran_flag="0"
+        print_success "Binary is available; skipping gfortran setup."
+    fi
 
-    # Create a temporary directory for download and cleanup on exit
+    # --- 3. Perple_X Setup ---
+    print_status "Setting up Perple_X ($version)..."
+
     tmp_dir=$(mktemp -d)
     trap 'rm -rf -- "$tmp_dir"' EXIT
 
-    # Define URLs and installation directory
-    local download_url
     local perplex_dir="$HOME/Perple_X/$version"
-    
-    if [[ "$version" == "head" ]]; then
-        download_url="https://github.com/jadconnolly/Perple_X/archive/refs/heads/main.tar.gz"
-    else
-        download_url="https://api.github.com/repos/jadconnolly/Perple_X/tarball/$version"
-    fi
 
-    # Check if the target directory exists
     if [ -d "$perplex_dir" ]; then
         print_error "Directory '$perplex_dir' already exists."
         print_error "Please remove it or choose a different version before running."
         exit 1
+    fi
+
+    if [[ "$binary_available" -eq 1 ]]; then
+        download_binary_release "$version" "$perplex_dir"
+        echo -e "\n=================================================="
+        echo "🎉 Perple_X ($version) Binary Setup Complete! 🎉"
+        echo "=================================================="
+        echo "Installation Directory: $perplex_dir"
+        echo "Executables:            $perplex_dir/bin/"
+        echo ""
+        echo "🧪 To run Perple_X:"
+        echo "   cd $perplex_dir"
+        echo "   ./bin/werami"
+        echo "=================================================="
+        exit 0
     fi
 
     # Download source code
