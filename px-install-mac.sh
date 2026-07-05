@@ -7,9 +7,10 @@
 # https://github.com/jadconnolly/Perple_X/
 #
 # Usage:
-# ./px-install-mac.sh [version|head]
+# ./px-install-mac.sh [version|head] [--build]
 # e.g., ./px-install-mac.sh v7.1.13
 #       ./px-install-mac.sh head
+#       ./px-install-mac.sh v7.1.20 --build
 #
 # When you get a 'permission denied' error,
 # 1.  grant it execute permissions, or
@@ -29,11 +30,14 @@ print_error() { echo "❌ $1" >&2; }
 
 # --- Usage Function ---
 usage() {
-    echo "Usage: $scr_name [version|head]"
+    echo "Usage: $scr_name [version|head] [--build]"
     echo "  version: A valid Perple_X release tag (e.g., v7.1.13)."
     echo "  head:    Install the latest version from the main branch."
+    echo "  --build: Force a source build even if a binary release exists."
     echo
-    echo "Example: $scr_name v7.1.13"
+    echo "Examples:"
+    echo "  $scr_name v7.1.13"
+    echo "  $scr_name v7.1.20 --build"
 }
 
 # --- Version Check Functions ---
@@ -89,6 +93,12 @@ check_buildability() {
 # Checks if a binary is provided (v7.1.15 or newer returns 0)
 check_if_binary_provided() {
     local version_to_check="$1"
+    local force_build="${2:-false}"
+
+    if [[ "$force_build" == "true" ]]; then
+        return 1
+    fi
+
     if [[ "$version_to_check" == "head" ]]; then
         return 1  # head はビルド前提
     fi
@@ -98,6 +108,16 @@ check_if_binary_provided() {
         return 0
     else
         return 1
+    fi
+}
+
+get_source_download_url() {
+    local version="$1"
+
+    if [[ "$version" == "head" ]]; then
+        echo "https://github.com/jadconnolly/Perple_X/archive/refs/heads/main.tar.gz"
+    else
+        echo "https://github.com/jadconnolly/Perple_X/archive/refs/tags/${version}.tar.gz"
     fi
 }
 
@@ -168,12 +188,23 @@ gfortran_setup() {
 # --- Main Logic ---
 main() {
     # --- 0. Initial Checks ---
-    if [[ $# -eq 0 ]]; then
+    if [[ $# -lt 1 || $# -gt 2 ]]; then
         usage
         exit 1
     fi
     
     local version="$1"
+    local force_build="false"
+
+    if [[ $# -eq 2 ]]; then
+        if [[ "$2" == "--build" ]]; then
+            force_build="true"
+        else
+            print_error "Unknown option: $2"
+            usage
+            exit 1
+        fi
+    fi
 
     if [[ "$OSTYPE" != "darwin"* ]]; then
         print_error "This script is for macOS only."
@@ -188,7 +219,7 @@ main() {
     # --- 1. Version Validation ---
     validate_version "$version"
     check_buildability "$version"
-    if check_if_binary_provided "$version"; then
+    if check_if_binary_provided "$version" "$force_build"; then
         binary_available=1
     else
         binary_available=0
@@ -240,6 +271,8 @@ main() {
     fi
 
     # Download source code
+    local download_url
+    download_url=$(get_source_download_url "$version")
     print_status "Downloading source code from $download_url..."
     if ! curl -L "$download_url" -o "$tmp_dir/perplex.tar.gz"; then
         print_error "Download failed. Please check the version and your internet connection."
@@ -279,19 +312,24 @@ main() {
 
     # --- 4. Copy Executables ---
     print_status "Copying executables..."
-    local executables="actcor convex fluids MC_fit pspts pstable pt2curv werami build ctransf frendly meemum pssect psvdraw vertex"
     
     mkdir -p "$perplex_dir/bin" "$perplex_dir/bin_backup"
 
-    for exe in $executables; do
-        if [ -f "$exe" ]; then
-            cp "$exe" "$perplex_dir/bin/"
-        else
-            echo "⚠️  Warning: Executable '$exe' not found after build."
-        fi
-    done
+    local copied_executables=0
+    while IFS= read -r -d '' exe; do
+        cp "$exe" "$perplex_dir/bin/"
+        copied_executables=1
+    done < <(find . -maxdepth 1 -type f -perm -111 -print0)
+
+    if [[ "$copied_executables" -eq 0 ]]; then
+        print_error "No executables were found after build."
+        exit 1
+    fi
     print_success "Executables copied to $perplex_dir/bin/"
-    cp -r "$perplex_dir/bin/"* "$perplex_dir/bin_backup/"
+
+    while IFS= read -r -d '' exe; do
+        cp "$exe" "$perplex_dir/bin_backup/"
+    done < <(find "$perplex_dir/bin" -maxdepth 1 -type f -print0)
     print_success "Executables backuped to $perplex_dir/bin_backup/"
 
     # --- 5. Final Instructions ---
