@@ -349,6 +349,9 @@ main() {
     echo "🧪 To run Perple_X:"
     echo "   cd $perplex_dir"
     echo "   ./bin/werami"
+    echo ""
+    echo "For signature-related launch issues, see below:"
+    echo "https://github.com/Quax-Quax/px-mac-auto-setup"
     echo "=================================================="
 }
 
