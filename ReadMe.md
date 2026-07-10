@@ -22,5 +22,13 @@ cdでlibへ移動し、次のコマンドを実行してください。なお、
 for f in *; do [ -f "$f" ] && file "$f" | grep -q Mach-O && /usr/bin/codesign --force --sign - --timestamp=none "$f"; done
 ```
 
+署名の検証は以下のコマンドで行えます。
+```sh
+codesign --verify --verbose=4 target
+```
+
+---
+
 このリポジトリ内のコードは Github Copilot を補助的に用いて作成しました。
+
 Author: Quax-Quax  
