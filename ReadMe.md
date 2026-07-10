@@ -14,5 +14,13 @@ versionには、`vX.XX.XX`（vから始まるバージョン番号）ないし`h
 ビルドに使用するMakeFile（OSX_makefile2）は、2025年にマージされました。そのため、このスクリプトでv7.1.12以前のものをビルドすることはできません。古いバージョンが必要な場合は、OSX_makefile2を移植し、スクリプトを参考に手動でビルドしてください。  
 参考：https://github.com/jadconnolly/Perple_X/  
   
-Claude Sonnet 4, Gemini 2.5 Pro Coding Partner を用いて作成しました。  
+## 署名検証ではねられる場合
+同梱のdylibに手が加えられており、起動をcodesignに拒否されることがあります。少々乱暴ですが、ad-hoc署名を強制的に上書きすることで対処できます。コマンドの内容とリスクを理解しないまま実行してはいけません。
+
+cdでlibへ移動し、次のコマンドを実行してください。なお、このコマンドはbin以下の再署名にも活用できます。
+```sh
+for f in *; do [ -f "$f" ] && file "$f" | grep -q Mach-O && /usr/bin/codesign --force --sign - --timestamp=none "$f"; done
+```
+
+このリポジトリ内のコードは Github Copilot を補助的に用いて作成しました。
 Author: Quax-Quax  
